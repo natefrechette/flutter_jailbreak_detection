@@ -11,9 +11,14 @@ public class SwiftFlutterJailbreakDetectionPlugin: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "jailbroken":
+            let jailbreakStatus = IOSSecuritySuite.amIJailbrokenWithFailedChecks()
+            if jailbreakStatus.jailbroken {
+              if (jailbreakStatus.failedChecks.contains { $0.check == .existenceOfSuspiciousFiles }) && (jailbreakStatus.failedChecks.contains { $0.check == .suspiciousFilesCanBeOpened }) {
+                    result(true)
+              }
+            }
             
-            let check2 = IOSSecuritySuite.amIJailbroken()
-            result(check2)
+            result(false)
             break
         case "developerMode":
             result(IOSSecuritySuite.amIRunInEmulator())
